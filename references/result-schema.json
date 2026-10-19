@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Test case execution result",
+  "type": "object",
+  "required": ["case_id", "run_at", "environment", "verdict", "steps"],
+  "properties": {
+    "case_id": { "type": "string", "description": "Case identifier, e.g. CHK-05-021" },
+    "case_title": { "type": "string" },
+    "case_source": { "type": "string", "description": "File/suite and version the steps were read from" },
+    "tickets": { "type": "array", "items": { "type": "string" }, "description": "Tickets this run provides evidence for" },
+    "run_at": { "type": "string", "format": "date-time" },
+    "environment": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "description": "e.g. qa, staging, production" },
+        "host": { "type": "string" },
+        "build": { "type": "string" },
+        "browser": { "type": "string" },
+        "viewport": { "type": "string", "description": "e.g. 1440x900, 375x812" },
+        "stubs": { "type": "array", "items": { "type": "string" }, "description": "e.g. geolocation denied, ip-location blocked" }
+      }
+    },
+    "test_data": { "type": "object", "description": "Every data item chosen by criteria, with the criteria it meets", "additionalProperties": { "type": "string" } },
+    "verdict": { "enum": ["PASS", "FAIL", "BACKLOGGED", "NOT EXECUTABLE AS WRITTEN", "BLOCKED", "NOT RUNNABLE", "OUT OF SCOPE"] },
+    "verdict_reason": { "type": "string" },
+    "backlogged_on": { "type": "array", "items": { "type": "string" } },
+    "attempts": { "type": "integer", "minimum": 1 },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["n", "step", "expected", "seen", "match"],
+        "properties": {
+          "n": { "type": "integer" },
+          "step": { "type": "string" },
+          "expected": { "type": "string" },
+          "seen": { "type": "string" },
+          "match": { "type": "boolean" },
+          "class": { "enum": ["D", "W", "T", "S", "E", "B", null], "description": "Mismatch class when match is false or the step needed adapting" },
+          "evidence": { "type": "array", "items": { "type": "string" }, "description": "Screenshot / log paths" },
+          "attempt": { "type": "integer" }
+        }
+      }
+    },
+    "refinements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["field", "before", "after", "reason"],
+        "properties": {
+          "field": { "type": "string", "description": "e.g. Preconditions, Step 6 expected" },
+          "before": { "type": "string" },
+          "after": { "type": "string" },
+          "reason": { "type": "string" },
+          "class": { "enum": ["W", "T"] }
+        }
+      }
+    },
+    "run_notes": { "type": "string", "description": "Plain-language note on reruns, script fixes and anything a reader needs" }
+  }
+}
